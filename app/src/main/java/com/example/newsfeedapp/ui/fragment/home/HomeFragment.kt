@@ -1,7 +1,6 @@
 package com.example.newsfeedapp.ui.fragment.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
@@ -11,7 +10,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.newsfeedapp.R
-import com.example.newsfeedapp.common.*
+import com.example.newsfeedapp.common.Resource
+import com.example.newsfeedapp.common.gone
+import com.example.newsfeedapp.common.searchQuery
+import com.example.newsfeedapp.common.show
 import com.example.newsfeedapp.data.model.Article
 import com.example.newsfeedapp.ui.NewsViewModel
 import com.example.newsfeedapp.ui.adapter.NewsAdapter
@@ -27,8 +29,10 @@ class HomeFragment : Fragment(R.layout.fragment_home), NewsAdapter.Interaction,
     private val newsAdapter by lazy { NewsAdapter(this) }
     private lateinit var responseList: MutableList<Article>
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
         viewModel.getHomeNews()
         responseList = mutableListOf()
 
@@ -39,6 +43,8 @@ class HomeFragment : Fragment(R.layout.fragment_home), NewsAdapter.Interaction,
     }
 
     private fun observeToErrorLiveData(view: View) {
+
+
         viewModel.error.observe(viewLifecycleOwner, Observer {
             if(it){
                 viewModel.error.postValue(false)
@@ -83,7 +89,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), NewsAdapter.Interaction,
         swipeRefresh.apply {
             setOnRefreshListener {
                 responseList.clear()
-               viewModel.getHomeNews()
+                viewModel.getHomeNews()
                 observeToNewsLiveData()
 
             }
