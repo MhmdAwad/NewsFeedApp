@@ -1,6 +1,7 @@
 package com.example.newsfeedapp.ui.fragment.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
@@ -28,7 +29,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), NewsAdapter.Interaction,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        viewModel.getHomeNews()
         responseList = mutableListOf()
 
         setupRecyclerView()
@@ -64,6 +65,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), NewsAdapter.Interaction,
 
                 is Resource.Loading -> ProgressBar.show()
                 is Resource.Success -> {
+
                     if (it.data != null) {
                         ProgressBar.gone()
                         swipeRefresh.isRefreshing = false
@@ -81,6 +83,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), NewsAdapter.Interaction,
         swipeRefresh.apply {
             setOnRefreshListener {
                 responseList.clear()
+               viewModel.getHomeNews()
                 observeToNewsLiveData()
 
             }

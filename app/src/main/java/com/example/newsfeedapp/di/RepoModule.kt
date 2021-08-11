@@ -6,8 +6,7 @@ import androidx.room.Room
 import com.example.newsfeedapp.common.INetworkAwareHandler
 import com.example.newsfeedapp.common.NetworkHandler
 import com.example.newsfeedapp.data.*
-import com.example.newsfeedapp.data.sources.favouriteLocalData.FavouriteNewsDao
-import com.example.newsfeedapp.data.sources.favouriteLocalData.FavouriteNewsDataBase
+
 import com.example.newsfeedapp.data.sources.homeCahedData.HomeNewsDao
 import com.example.newsfeedapp.data.sources.homeCahedData.IOfflineDataSource
 import com.example.newsfeedapp.data.sources.homeCahedData.OfflineSourcesRoomBased
@@ -44,10 +43,7 @@ object RepoModule {
     fun provideINetworkAwareHandler( @ApplicationContext context: Context)
             =NetworkHandler(context) as INetworkAwareHandler
 
-    @Provides
-    @Singleton
-    fun provideFavRepo( favDao: FavouriteNewsDao)
-            =FavRepo(favDao)
+
     @Provides
     @Singleton
     fun provideIApiHelper( apiService: ApiService)

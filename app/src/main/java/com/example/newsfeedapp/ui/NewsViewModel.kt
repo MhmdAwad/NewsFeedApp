@@ -17,9 +17,7 @@ class NewsViewModel  @ViewModelInject constructor (private val newsRepository: N
      var error = MutableLiveData<Boolean>()
 
 
-    init {
-        getHomeNews()
-    }
+
 
      fun getHomeNews() {
         articleNews.postValue(Resource.Loading())
@@ -36,5 +34,11 @@ class NewsViewModel  @ViewModelInject constructor (private val newsRepository: N
     }
 
     fun getNews() = articleNews as LiveData<Resource<Article>>
+
+
+    suspend fun updateFavorite(isFv:Int,url:String)=newsRepository.updateFavorite(isFv,url)
+
+
+
 
 }

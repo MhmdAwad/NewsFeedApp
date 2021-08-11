@@ -5,13 +5,13 @@
     <string name="menu_Gallery">Gallery</string>
     <string name="action_search">Search</string>
     <string name="welcome">welcome</string>
-    <string name="name">Tony Roshdy </string>
+    <string name="name">Ali Samy </string>
     <string name="menu_wish_list">Wish List</string>
     <string name="menu_magazine">E-Magazine</string>
     <string name="open_website">open website</string>
     <string name="news_intro">Get breaking news headlines, and search for articles from over 30,000</string>
     <string name="action_delete">Delete All</string>
-    <string name="deleteAll">Are You Want To Delete All Favourite </string>
+    <string name="deleteAll">Are you sure you want to delete your favorites? </string>
     <string name="deleteArticle">Successfully Deleted Article</string>
     <string name="undo">Undo</string>
     <string name="yes">Yes , Delete </string>

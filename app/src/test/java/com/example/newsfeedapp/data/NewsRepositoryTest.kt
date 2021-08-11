@@ -6,7 +6,7 @@ import com.example.newsfeedapp.data.sources.homeCahedData.IOfflineDataSource
 import com.example.newsfeedapp.data.sources.remoteApi.IOnlineDataSource
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.core.Is
-import org.junit.Assert.*
+import org.junit.Assert.assertThat
 import org.junit.Test
 
 class NewsRepositoryTest {
@@ -31,17 +31,55 @@ val fakeList= mutableListOf<Article>().apply {
 
     }
 
+
+
     @Test
-    fun getNewsSources_withOnlineNetwork_thenReturnListOfSourcesFromOnlineDataSource() {
-        // run blocking to call suspend function or Coroutines scope
+    fun getNewsSources_andInsertit_inRoom(){
         runBlocking {
-            val onlineDataSource = object : IOnlineDataSource {
-                override suspend fun getArticles(): List<Article> {
+            val offlineDataSource = object : IOfflineDataSource {
+                override fun getArticles(): List<Article> {
                     return fakeList
                 }
             }
-            val newsRepository = NewsRepository(object : IOfflineDataSource {},
-                onlineDataSource,
+            val newsRepository = NewsRepository(offlineDataSource, object : IOnlineDataSource {},
+
+                object : INetworkAwareHandler {})
+
+            val result = newsRepository.getNewsSources()
+            val exepected = listOf(
+                Article(
+                    author = "one",
+                    url = "",
+                    publishedAt = "",
+                    description = "",
+                    urlToImage = "",
+                    title = ""
+                ),
+                Article(
+                    author = "two",
+                    url = "",
+                    publishedAt = "",
+                    description = "",
+                    urlToImage = "",
+                    title = ""
+                )
+            )
+            assertThat(result, Is.`is`(exepected))
+        }
+    }
+
+
+    @Test
+    fun getNewsSources_withOnlineNetwork_thenReturnListOfSourcesFromOfflineDataSource() {
+        // run blocking to call suspend function or Coroutines scope
+        runBlocking {
+            val offlineDataSource = object : IOfflineDataSource {
+                override fun getArticles(): List<Article> {
+                    return fakeList
+                }
+            }
+            val newsRepository = NewsRepository(offlineDataSource, object : IOnlineDataSource {},
+
                 object : INetworkAwareHandler {})
 
             val result = newsRepository.getNewsSources()

@@ -1,17 +1,13 @@
 package  com.example.newsfeedapp.di
 
 
-import android.content.Context
-import androidx.room.Room
 import com.example.newsfeedapp.BuildConfig
-import com.example.newsfeedapp.data.sources.favouriteLocalData.FavouriteNewsDataBase
 import com.example.newsfeedapp.data.sources.remoteApi.ApiService
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
-import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -25,7 +21,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideInterceptor()=   Interceptor { chain ->
+    fun provideInterceptor() = Interceptor { chain ->
         val request = chain.request()
             .newBuilder()
             .url(
@@ -38,9 +34,10 @@ object NetworkModule {
             .build()
         return@Interceptor chain.proceed(request)   //explicitly return a value from whit @ annotation. lambda always returns the value of the last expression implicitly
     }
+
     @Provides
     @Singleton
-    fun provideOkHttpClient(interceptor: Interceptor)=   OkHttpClient.Builder()
+    fun provideOkHttpClient(interceptor: Interceptor) = OkHttpClient.Builder()
         .addInterceptor(interceptor)
         .connectTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
         .build()
@@ -48,16 +45,20 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideGsonConverterFactory()=  GsonConverterFactory.create()
+    fun provideGsonConverterFactory() = GsonConverterFactory.create()
 
     @Provides
     @Singleton
-    fun provideCoroutineCallAdapterFactory()= CoroutineCallAdapterFactory()
+    fun provideCoroutineCallAdapterFactory() = CoroutineCallAdapterFactory()
 
     @Provides
     @Singleton
-    fun provideRetrofitBuilder(gsonConverterFactory: GsonConverterFactory,coroutineCallAdapterFactory: CoroutineCallAdapterFactory
-                        ,okHttpClient: OkHttpClient) =
+    fun provideRetrofitBuilder(
+        gsonConverterFactory: GsonConverterFactory,
+        coroutineCallAdapterFactory: CoroutineCallAdapterFactory
+        ,
+        okHttpClient: OkHttpClient
+    ) =
         Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(gsonConverterFactory)
@@ -68,8 +69,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideApiService(retrofit: Retrofit) =retrofit.create(ApiService::class.java)
-
+    fun provideApiService(retrofit: Retrofit): ApiService = retrofit.create(ApiService::class.java)
 
 
 }

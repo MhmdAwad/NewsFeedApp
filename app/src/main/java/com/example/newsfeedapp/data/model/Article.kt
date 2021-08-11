@@ -21,4 +21,9 @@ data class Article(
     @SerializedName("url")
     val url: String,
     @SerializedName("urlToImage")
-    val urlToImage: String? ) : Serializable
+    val urlToImage: String?,
+    @SerializedName("isFav")
+    var isFav: Int = 0
+
+
+) : Serializable

@@ -5,6 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface IApiHelper {
 
-    fun getarticles(source:String): Flow<NewsResponse>
+    fun getArticles(source:String): Flow<NewsResponse>
 
 }

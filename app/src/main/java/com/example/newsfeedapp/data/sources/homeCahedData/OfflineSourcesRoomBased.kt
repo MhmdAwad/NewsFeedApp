@@ -12,7 +12,9 @@ class OfflineSourcesRoomBased @Inject constructor (private val homeDao: HomeNews
         homeDao.insertList(data)
     }
 
-    override suspend fun deleteAllNews() {
-        homeDao.deleteAllNews()
+    override suspend fun updateFav(isFv: Int, url: String) {
+        homeDao.updateFav(isFv , url)
     }
+
+
 }

@@ -2,6 +2,7 @@ package com.example.newsfeedapp.ui.fragment.wish_list
 
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -10,6 +11,7 @@ import android.view.View
 import android.widget.SearchView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -17,10 +19,14 @@ import com.example.newsfeedapp.R
 import com.example.newsfeedapp.common.searchQuery
 import com.example.newsfeedapp.common.showDialog
 import com.example.newsfeedapp.data.model.Article
+import com.example.newsfeedapp.ui.NewsViewModel
 import com.example.newsfeedapp.ui.adapter.NewsAdapter
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_wish_list.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.getViewModel
 
 @AndroidEntryPoint
@@ -28,36 +34,58 @@ import org.koin.android.viewmodel.ext.android.getViewModel
 class WishListFragment : Fragment(R.layout.fragment_wish_list), NewsAdapter.Interaction,
     SearchView.OnQueryTextListener {
 
-    private val viewModel: FavouriteViewModel by viewModels()
     private val newsAdapter by lazy { NewsAdapter(this) }
     private lateinit var favList: MutableList<Article>
+    private val viewModel: NewsViewModel by viewModels()
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         favList = mutableListOf()
         setHasOptionsMenu(true)
+        viewModel.getHomeNews()
         setupRecyclerView()
         observeToFavLiveData()
         swipeToDelete(view)
     }
 
     private fun swipeToDelete(view: View) {
-        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN,
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        ) {
 
-           override fun onMove(recyclerView: RecyclerView, iewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                iewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
                 return true
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
                 val article = newsAdapter.differ.currentList[position]
-                viewModel.deleteArticle(article)
+                GlobalScope.launch(Dispatchers.IO) {
+                    Log.e("TAG", "delete all")
+
+
+
+                    viewModel.updateFavorite(0, article.url)
+
+                    viewModel.getHomeNews()
+
+                }
 
                 Snackbar.make(view, getString(R.string.deleteArticle), Snackbar.LENGTH_LONG).apply {
                     setAction(getString(R.string.undo)) {
-                        viewModel.saveArticle(article)
+
+                        GlobalScope.launch(Dispatchers.IO) {
+                            viewModel.updateFavorite(1, article.url)
+
+                            viewModel.getHomeNews()
+                        }
+
                     }
                     show()
                 }
@@ -70,10 +98,13 @@ class WishListFragment : Fragment(R.layout.fragment_wish_list), NewsAdapter.Inte
     }
 
     private fun observeToFavLiveData() {
-        viewModel.getSavedArticles()?.observe(viewLifecycleOwner, Observer { articles ->
+        viewModel.getNews().observe(viewLifecycleOwner, Observer { articles ->
             if (articles != null) {
-                newsAdapter.differ.submitList(articles.reversed())
-                favList.addAll(articles)
+                val filteredList = articles.data?.filter {
+                    it.isFav == 1
+                };
+                newsAdapter.differ.submitList(filteredList?.reversed())
+                filteredList?.let { favList.addAll(it?.reversed()) }
             }
         })
 
@@ -96,13 +127,30 @@ class WishListFragment : Fragment(R.layout.fragment_wish_list), NewsAdapter.Inte
             R.id.action_deleteAll -> {
 
                 if (favList.isNotEmpty())
-                    showDialog(getString(R.string.deleteAll), getString(R.string.yes)
-                        , DialogInterface.OnClickListener { dialog, which ->
-                            viewModel.deleteAllArticles()
-                            favList.clear()
-                        }, getString(R.string.no), DialogInterface.OnClickListener { dialog, which ->
+                    showDialog(getString(R.string.deleteAll),
+                        getString(R.string.yes)
+                        ,
+                        DialogInterface.OnClickListener { dialog, which ->
+
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                Log.e("TAG", "delete all")
+
+                                val size = favList.size - 1
+
+                                for (i in 0..size) {
+                                    viewModel.updateFavorite(0, favList[i].url)
+                                }
+                                viewModel.getHomeNews()
+
+                            }
+
+
+                        },
+                        getString(R.string.no),
+                        DialogInterface.OnClickListener { dialog, which ->
                             dialog.dismiss()
-                        }, true
+                        },
+                        true
                     )
                 true
             }
@@ -124,7 +172,7 @@ class WishListFragment : Fragment(R.layout.fragment_wish_list), NewsAdapter.Inte
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        newsAdapter.differ.submitList(searchQuery(newText,favList))
+        newsAdapter.differ.submitList(searchQuery(newText, favList))
         return true
     }
 }

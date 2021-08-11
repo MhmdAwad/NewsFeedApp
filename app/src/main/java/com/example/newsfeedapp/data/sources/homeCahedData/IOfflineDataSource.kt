@@ -1,5 +1,6 @@
 package com.example.newsfeedapp.data.sources.homeCahedData
 
+import androidx.room.Query
 import com.example.newsfeedapp.data.model.Article
 
 interface IOfflineDataSource {
@@ -7,7 +8,7 @@ interface IOfflineDataSource {
 
     suspend fun cacheArticles(data: List<Article>){}
 
-    suspend fun deleteAllNews(){}
+    suspend fun updateFav(isFv: Int, url: String){}
 
 
 

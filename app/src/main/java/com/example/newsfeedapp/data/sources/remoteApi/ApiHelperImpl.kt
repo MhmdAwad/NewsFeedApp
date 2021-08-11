@@ -5,5 +5,5 @@ import javax.inject.Inject
 
 class ApiHelperImpl @Inject constructor (private val apiService: ApiService) : IApiHelper {
 
-    override fun getarticles(source: String)= flow { emit(apiService.getArticlesNews(source)) }
+    override fun getArticles(source: String)= flow { emit(apiService.getArticlesNews(source)) }
 }

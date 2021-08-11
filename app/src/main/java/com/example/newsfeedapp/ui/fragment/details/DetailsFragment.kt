@@ -3,9 +3,11 @@ package com.example.newsfeedapp.ui.fragment.details
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.RequestManager
@@ -13,36 +15,44 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.newsfeedapp.R
 import com.example.newsfeedapp.common.dateFormat
 import com.example.newsfeedapp.common.dateToTimeFormat
-import com.example.newsfeedapp.common.showMsg
 import com.example.newsfeedapp.common.showToast
-import com.example.newsfeedapp.ui.fragment.wish_list.FavouriteViewModel
+import com.example.newsfeedapp.ui.NewsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_details.*
-import org.koin.android.viewmodel.ext.android.getViewModel
-import org.koin.core.KoinComponent
-import org.koin.core.get
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class DetailsFragment : Fragment(R.layout.fragment_details) {
     private val args: DetailsFragmentArgs by navArgs()
+
     @Inject
     lateinit var glide: RequestManager
-    private val viewModel: FavouriteViewModel by viewModels()
+    //private val viewModel: FavouriteViewModel by viewModels()
 
+    private val viewModel: NewsViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         bindData()
+        favBtn.isFavorite = args.article.isFav == 1
 
-        if (viewModel.isFavourite(args.article.url) == 1) {
-            favBtn.isFavorite = true
-            setOnFavListener()
-        } else
-            setOnFavListener()
+        favBtn.setOnFavoriteChangeListener { buttonView, favorite ->
+            lifecycleScope.launch(Dispatchers.IO) {
+                Log.e("TAG", "on fav clicked" + favorite)
 
+
+                if (favorite)
+                    viewModel.updateFavorite(1, args.article.url)
+                else
+                    viewModel.updateFavorite(0, args.article.url)
+
+
+            }
+        }
 
         shareBtn.setOnClickListener {
             try {
@@ -80,16 +90,5 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         descriptionTxt.text = args.article.description
     }
 
-    private fun setOnFavListener() {
-        favBtn.setOnFavoriteChangeListener { buttonView, favorite ->
-            if (favorite) {
-                viewModel.saveArticle(args.article)
-                showMsg("Added")
-            } else {
-                viewModel.deleteArticle(args.article)
-                showMsg("removed")
-            }
-        }
-    }
 }
 

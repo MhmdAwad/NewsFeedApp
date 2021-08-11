@@ -4,6 +4,7 @@ package com.example.newsfeedapp.data.sources.remoteApi
 import android.util.Log
 import com.example.newsfeedapp.data.model.Article
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
@@ -26,14 +27,15 @@ By zipping two flow collections using the Zip operator, both the network calls r
 
  */
 
+    @ExperimentalCoroutinesApi
     override suspend fun getArticles(): List<Article> {
-        service.getarticles("the-next-web")
-            .zip(service.getarticles("associated-press")) { firstSource, secondSource ->
-                val allArticlesFromApi = mutableListOf<Article>().apply {
+        service.getArticles("the-next-web")
+            .zip(service.getArticles("associated-press")) { firstSource, secondSource ->
+                Log.e("TAG","calling api")
+                return@zip mutableListOf<Article>().apply {
                     firstSource.articles?.let { addAll(it) }
                     secondSource.articles?.let { addAll(it) }
                 }
-                return@zip allArticlesFromApi
             }.flowOn(Dispatchers.IO)
             .catch { e ->
                 errorMsg = e.message.toString()
