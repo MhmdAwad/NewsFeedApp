@@ -1,8 +1,8 @@
 package com.example.newsfeedapp.data.sources.homeCahedData
 
 import androidx.room.Room
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.runner.AndroidJUnit4
 import com.example.newsfeedapp.data.model.Article
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.core.Is

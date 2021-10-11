@@ -3,8 +3,19 @@ package com.example.newsfeedapp.data.sources.homeCahedData
 import com.example.newsfeedapp.data.model.Article
 import javax.inject.Inject
 
+interface OfflineDataSource {
+    fun getArticles(): List<Article> = emptyList()
 
-class OfflineSourcesRoomBased @Inject constructor (private val homeDao: HomeNewsDao) : IOfflineDataSource {
+    suspend fun cacheArticles(data: List<Article>) {}
+
+    suspend fun updateFav(isFv: Int, url: String) {}
+
+
+}
+
+
+class OfflineDataSourceImpl @Inject constructor(private val homeDao: HomeNewsDao) :
+    OfflineDataSource {
 
     override fun getArticles(): List<Article> = homeDao.getAllArticles()
 
@@ -13,7 +24,7 @@ class OfflineSourcesRoomBased @Inject constructor (private val homeDao: HomeNews
     }
 
     override suspend fun updateFav(isFv: Int, url: String) {
-        homeDao.updateFav(isFv , url)
+        homeDao.updateFav(isFv, url)
     }
 
 

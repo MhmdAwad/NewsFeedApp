@@ -7,16 +7,17 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterF
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 object NetworkModule {
 
     @Provides
@@ -26,7 +27,7 @@ object NetworkModule {
             .newBuilder()
             .url(
                 chain.request()
-                    .url
+                    .url()
                     .newBuilder()
                     .addQueryParameter("apiKey", BuildConfig.API_KEY)
                     .build()
@@ -35,10 +36,21 @@ object NetworkModule {
         return@Interceptor chain.proceed(request)   //explicitly return a value from whit @ annotation. lambda always returns the value of the last expression implicitly
     }
 
+    @Singleton
+    @Provides
+    fun providesLoggingInterceptor() : HttpLoggingInterceptor {
+        val loggingInterceptor = HttpLoggingInterceptor()
+        if (BuildConfig.DEBUG){
+            loggingInterceptor.level= HttpLoggingInterceptor.Level.BODY
+        }
+        return loggingInterceptor
+    }
+
     @Provides
     @Singleton
-    fun provideOkHttpClient(interceptor: Interceptor) = OkHttpClient.Builder()
+    fun provideOkHttpClient(loggingInterceptor:HttpLoggingInterceptor,interceptor: Interceptor) = OkHttpClient.Builder()
         .addInterceptor(interceptor)
+        .addInterceptor(loggingInterceptor)
         .connectTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
         .build()
 

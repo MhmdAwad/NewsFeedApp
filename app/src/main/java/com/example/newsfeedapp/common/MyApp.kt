@@ -1,22 +1,18 @@
 package com.example.newsfeedapp.common
 
 import android.app.Application
-import com.example.newsfeedapp.di.*
+import com.example.newsfeedapp.BuildConfig
 import dagger.hilt.android.HiltAndroidApp
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.context.startKoin
+import timber.log.Timber
+
 
 @HiltAndroidApp
 class MyApp : Application() {
 
-    /*override fun onCreate() {
+    override fun onCreate() {
         super.onCreate()
-        //setting up koin
-        startKoin {
-            androidContext(applicationContext)
-            modules(listOf(roomModule, glideModule, networkModule, viewModelModule, apiServiceModule, repoModule))
-        }
+        //setup timber for debug only
+        if(BuildConfig.DEBUG)
+            Timber.plant(Timber.DebugTree())
     }
-
-     */
 }

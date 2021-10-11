@@ -101,12 +101,12 @@ class WishListFragment : Fragment(R.layout.fragment_wish_list), NewsAdapter.Inte
 
             when (articles) {
                 is Resource.Error -> {
-                    ProgressBar_wishList.gone()
+                    ProgressBar.gone()
                 }
 
-                is Resource.Loading -> ProgressBar_wishList.show()
+                is Resource.Loading -> ProgressBar.show()
                 is Resource.Success -> {
-                    ProgressBar_wishList.gone()
+                    ProgressBar.gone()
                     val filteredList = articles.data?.filter {
                         it.isFav == 1
                     };

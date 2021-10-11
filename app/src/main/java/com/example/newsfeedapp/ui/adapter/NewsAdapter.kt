@@ -6,17 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
-import com.bumptech.glide.Glide
-import com.bumptech.glide.RequestManager
 import com.example.newsfeedapp.R
 import com.example.newsfeedapp.common.dateFormat
 import com.example.newsfeedapp.common.loadImage
 import com.example.newsfeedapp.data.model.Article
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.item_news.view.*
-import org.koin.core.KoinComponent
-import org.koin.core.get
-import javax.inject.Inject
 
 
 class NewsAdapter(private val interaction: Interaction? = null) :

@@ -30,7 +30,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
     @Inject
     lateinit var glide: RequestManager
-    //private val viewModel: FavouriteViewModel by viewModels()
 
     private val viewModel: NewsViewModel by viewModels()
 

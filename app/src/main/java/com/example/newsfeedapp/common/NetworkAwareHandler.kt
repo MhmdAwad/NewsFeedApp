@@ -4,8 +4,13 @@ import android.content.Context
 import android.net.ConnectivityManager
 import javax.inject.Inject
 
-class NetworkHandler @Inject constructor (private val context: Context) :
-    INetworkAwareHandler {
+interface NetworkAwareHandler {
+    fun isOnline():Boolean =true
+
+}
+
+class NetworkHandlerImpl @Inject constructor (private val context: Context) :
+    NetworkAwareHandler {
 
     override fun isOnline(): Boolean {
 

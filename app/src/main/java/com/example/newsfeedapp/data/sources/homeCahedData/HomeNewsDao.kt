@@ -19,12 +19,6 @@ interface HomeNewsDao {
     fun getAllArticles(): List<Article>
 
 
-
-
-
-
-
-
     @Query("UPDATE Article SET isFav = :isFv  WHERE url = :url")
     suspend fun updateFav(isFv: Int, url: String)
 

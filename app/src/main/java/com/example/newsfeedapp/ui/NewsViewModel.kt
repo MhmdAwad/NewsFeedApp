@@ -1,17 +1,19 @@
 package com.example.newsfeedapp.ui
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newsfeedapp.common.Resource
-import com.example.newsfeedapp.data.NewsRepository
 import com.example.newsfeedapp.data.model.Article
+import com.example.newsfeedapp.domain.NewsUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class NewsViewModel  @ViewModelInject constructor (private val newsRepository: NewsRepository) : ViewModel() {
+@HiltViewModel
+class NewsViewModel  @Inject constructor (private val newsUseCase: NewsUseCase) : ViewModel() {
 
     private var articleNews = MutableLiveData<Resource<Article>>()
      var error = MutableLiveData<Boolean>()
@@ -23,7 +25,7 @@ class NewsViewModel  @ViewModelInject constructor (private val newsRepository: N
         articleNews.postValue(Resource.Loading())
 
         viewModelScope.launch(Dispatchers.IO) {
-            val result = newsRepository.getNewsSources()
+            val result = newsUseCase.getNewsUseCase()
 
             articleNews.postValue(Resource.Success(result))
             if(result.isNullOrEmpty()){
@@ -36,7 +38,7 @@ class NewsViewModel  @ViewModelInject constructor (private val newsRepository: N
     fun getNews() = articleNews as LiveData<Resource<Article>>
 
 
-    suspend fun updateFavorite(isFv:Int,url:String)=newsRepository.updateFavorite(isFv,url)
+    suspend fun updateFavorite(isFv:Int,url:String)=newsUseCase.updateFavoriteUseCase(isFv,url)
 
 
 

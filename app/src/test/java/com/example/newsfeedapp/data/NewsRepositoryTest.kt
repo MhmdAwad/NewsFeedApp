@@ -1,9 +1,9 @@
 package com.example.newsfeedapp.data
 
-import com.example.newsfeedapp.common.INetworkAwareHandler
+import com.example.newsfeedapp.common.NetworkAwareHandler
 import com.example.newsfeedapp.data.model.Article
-import com.example.newsfeedapp.data.sources.homeCahedData.IOfflineDataSource
-import com.example.newsfeedapp.data.sources.remoteApi.IOnlineDataSource
+import com.example.newsfeedapp.data.sources.homeCahedData.OfflineDataSource
+import com.example.newsfeedapp.data.sources.remoteApi.OnlineDataSource
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.core.Is
 import org.junit.Assert.assertThat
@@ -36,14 +36,14 @@ val fakeList= mutableListOf<Article>().apply {
     @Test
     fun getNewsSources_andInsertit_inRoom(){
         runBlocking {
-            val offlineDataSource = object : IOfflineDataSource {
+            val offlineDataSource = object : OfflineDataSource {
                 override fun getArticles(): List<Article> {
                     return fakeList
                 }
             }
-            val newsRepository = NewsRepository(offlineDataSource, object : IOnlineDataSource {},
+            val newsRepository = NewsRepositoryImpl(offlineDataSource, object : OnlineDataSource {},
 
-                object : INetworkAwareHandler {})
+                object : NetworkAwareHandler {})
 
             val result = newsRepository.getNewsSources()
             val exepected = listOf(
@@ -73,14 +73,14 @@ val fakeList= mutableListOf<Article>().apply {
     fun getNewsSources_withOnlineNetwork_thenReturnListOfSourcesFromOfflineDataSource() {
         // run blocking to call suspend function or Coroutines scope
         runBlocking {
-            val offlineDataSource = object : IOfflineDataSource {
+            val offlineDataSource = object : OfflineDataSource {
                 override fun getArticles(): List<Article> {
                     return fakeList
                 }
             }
-            val newsRepository = NewsRepository(offlineDataSource, object : IOnlineDataSource {},
+            val newsRepository = NewsRepositoryImpl(offlineDataSource, object : OnlineDataSource {},
 
-                object : INetworkAwareHandler {})
+                object : NetworkAwareHandler {})
 
             val result = newsRepository.getNewsSources()
             val exepected = listOf(
@@ -110,15 +110,15 @@ val fakeList= mutableListOf<Article>().apply {
     @Test
     fun getNewsSources_withOfflineNetwork_thenReturnListOfSourcesFromOfflineDataSource() {
         runBlocking {
-            val offlineDataSource = object : IOfflineDataSource {
+            val offlineDataSource = object : OfflineDataSource {
                 override fun getArticles(): List<Article> {
                     return fakeList
                 }
             }
 
-            val newsRepository = NewsRepository(offlineDataSource,
-                object : IOnlineDataSource {},
-                object : INetworkAwareHandler {
+            val newsRepository = NewsRepositoryImpl(offlineDataSource,
+                object : OnlineDataSource {},
+                object : NetworkAwareHandler {
                     override fun isOnline(): Boolean = false
                 })
 
@@ -151,16 +151,16 @@ val fakeList= mutableListOf<Article>().apply {
         runBlocking {
             var isGetSourcesInvoked = false
 
-            val onlineDataSource = object : IOnlineDataSource {
+            val onlineDataSource = object : OnlineDataSource {
                 override suspend fun getArticles(): List<Article> {
                     isGetSourcesInvoked = true
                     return listOf()
                 }
             }
 
-            val newsRepository = NewsRepository(object : IOfflineDataSource {},
+            val newsRepository = NewsRepositoryImpl(object : OfflineDataSource {},
                 onlineDataSource,
-                object : INetworkAwareHandler {})
+                object : NetworkAwareHandler {})
 
             newsRepository.getNewsSources()
 
@@ -174,23 +174,23 @@ val fakeList= mutableListOf<Article>().apply {
         runBlocking {
             var isCachedInvoked = false
 
-            val onlineDataSource = object : IOnlineDataSource {
+            val onlineDataSource = object : OnlineDataSource {
                 override suspend fun getArticles(): List<Article> {
                     return listOf()
                 }
             }
 
-            val offlineDataSource = object : IOfflineDataSource {
+            val offlineDataSource = object : OfflineDataSource {
                 override suspend fun cacheArticles(data: List<Article>) {
                     isCachedInvoked = true
                 }
             }
 
 
-            val newsRepository = NewsRepository(
+            val newsRepository = NewsRepositoryImpl(
                 offlineDataSource,
                 onlineDataSource,
-                object : INetworkAwareHandler {})
+                object : NetworkAwareHandler {})
 
             newsRepository.getNewsSources()
 
@@ -203,16 +203,16 @@ val fakeList= mutableListOf<Article>().apply {
         runBlocking {
             var isGetSourcesInvoked = false
 
-            val onlineDataSource = object : IOnlineDataSource {
+            val onlineDataSource = object : OnlineDataSource {
                 override suspend fun getArticles(): List<Article> {
                     isGetSourcesInvoked = true
                     return listOf()
                 }
             }
 
-            val newsRepository = NewsRepository(object : IOfflineDataSource {},
+            val newsRepository = NewsRepositoryImpl(object : OfflineDataSource {},
                 onlineDataSource,
-                object : INetworkAwareHandler {})
+                object : NetworkAwareHandler {})
 
             newsRepository.getNewsSources()
 
