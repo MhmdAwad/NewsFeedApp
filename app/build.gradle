@@ -5,7 +5,6 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id "androidx.navigation.safeargs.kotlin"
-
 }
 
 
@@ -21,18 +20,20 @@ android {
         versionName Android.versionName
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
+
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         debug {
             buildConfigField("String", "BASE_URL", "\"https://newsapi.org\"")
-            buildConfigField("String", "API_KEY", "\"f0b310a6e5f349838307ddd53bfa66c0\"")
+            buildConfigField("String", "API_KEY", "\"533af958594143758318137469b41ba9\"")
         }
         release {
             minifyEnabled false
             buildConfigField("String", "BASE_URL", "\"https://newsapi.org\"")
-            buildConfigField("String", "API_KEY", "\"f0b310a6e5f349838307ddd53bfa66c0\"")
+            buildConfigField("String", "API_KEY", "\"533af958594143758318137469b41ba9\"")
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -47,7 +48,6 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation Libs.kotlinStdLib
     implementation Libs.coreExt
     implementation Libs.appCompat

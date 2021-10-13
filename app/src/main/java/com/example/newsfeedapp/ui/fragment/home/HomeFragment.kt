@@ -33,8 +33,9 @@ class HomeFragment : Fragment(R.layout.fragment_home), NewsAdapter.Interaction,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-        viewModel.getHomeNews()
+
         responseList = mutableListOf()
+        viewModel.getHomeNews(false)
 
         setupRecyclerView()
         observeToNewsLiveData()
@@ -54,7 +55,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), NewsAdapter.Interaction,
                     Snackbar.LENGTH_INDEFINITE
                 )
                     .setAction(("retry")) {
-                        viewModel.getHomeNews()
+                        viewModel.getHomeNews(true)
                     }
                     .show()
             }
@@ -73,6 +74,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), NewsAdapter.Interaction,
                 is Resource.Success -> {
 
                     if (it.data != null) {
+                        responseList.clear()
                         ProgressBar.gone()
                         swipeRefresh.isRefreshing = false
                         newsAdapter.differ.submitList(it.data)
@@ -89,7 +91,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), NewsAdapter.Interaction,
         swipeRefresh.apply {
             setOnRefreshListener {
                 responseList.clear()
-                viewModel.getHomeNews()
+                viewModel.getHomeNews(true)
                 observeToNewsLiveData()
 
             }

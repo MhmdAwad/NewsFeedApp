@@ -17,7 +17,7 @@ object Versions {
     val GSON_VERSION = "2.8.7"
     val LIFE_CYCLE_VERSION = "2.2.0"
     val CONSTRAINT_LAYOUT = "2.0.4"
-    val ANDROID_GRADLE_VERSION = "7.0.2"
+    val ANDROID_GRADLE_VERSION = "4.2.1"
     val APP_COMPAT_VERSION = "1.3.0"
     val CORE_KTX = "1.1.0"
     val ARCH_CORE_TESTING_VER = "2.1.0"
@@ -102,8 +102,6 @@ object Libs {
         "com.github.ivbaranov:materialfavoritebutton:${Versions.MATERIAL_FAVOURITE_BUTTON}"
 
 
-//    androidTestImplementation 'androidx.test:rules:1.4.1-alpha03'
-//    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.5.0-alpha03'
 
 
     val roomRunTime = "androidx.room:room-runtime:${Versions.ROOM}"

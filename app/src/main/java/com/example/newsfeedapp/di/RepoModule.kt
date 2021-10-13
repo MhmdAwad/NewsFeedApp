@@ -2,8 +2,10 @@ package  com.example.newsfeedapp.di
 
 
 import android.content.Context
+import android.content.SharedPreferences
 import com.example.newsfeedapp.common.NetworkAwareHandler
 import com.example.newsfeedapp.common.NetworkHandlerImpl
+import com.example.newsfeedapp.common.SharedPrefHelper
 import com.example.newsfeedapp.data.*
 import com.example.newsfeedapp.data.sources.homeCahedData.*
 import com.example.newsfeedapp.data.sources.remoteApi.*
@@ -19,15 +21,38 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object RepoModule {
 
+
+
+    @Singleton
+    @Provides
+    fun provideSharedPreference(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("preferences_name", Context.MODE_PRIVATE)
+    }
+
+    @Singleton
+    @Provides
+    fun provideSharedPreferenceEditor(sharedPreferences: SharedPreferences): SharedPreferences.Editor {
+        return sharedPreferences.edit()
+    }
+
+    @Singleton
+    @Provides
+    fun sharedPrefHelper(sharedPreferences: SharedPreferences,editor: SharedPreferences.Editor): SharedPrefHelper {
+        return SharedPrefHelper(sharedPreferences,editor)
+    }
+
+
     @Provides
     @Singleton
-    fun provideNewsRepository(iOfflineDataSource: OfflineDataSource, iOnlineDataSource: OnlineDataSource, iNetworkAwareHandler: NetworkAwareHandler)
-            = NewsRepositoryImpl(iOfflineDataSource,iOnlineDataSource,iNetworkAwareHandler) as NewsRepository
+    fun provideNewsRepository(iOfflineDataSource: OfflineDataSource, iOnlineDataSource: OnlineDataSource,
+                              sharedPrefHelper: SharedPrefHelper,iNetworkAwareHandler: NetworkAwareHandler)
+            = NewsRepositoryImpl(iOfflineDataSource,iOnlineDataSource,sharedPrefHelper,iNetworkAwareHandler) as NewsRepository
 
     @Provides
     @Singleton
     fun provideIOfflineDataSource (homeDao: HomeNewsDao)
             = OfflineDataSourceImpl(homeDao) as OfflineDataSource
+
 
     @Provides
     @Singleton

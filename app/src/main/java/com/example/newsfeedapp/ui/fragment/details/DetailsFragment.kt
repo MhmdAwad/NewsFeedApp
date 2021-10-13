@@ -40,7 +40,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         favBtn.isFavorite = args.article.isFav == 1
 
         favBtn.setOnFavoriteChangeListener { buttonView, favorite ->
-            lifecycleScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch(Dispatchers.Main) {
                 Log.e("TAG", "on fav clicked" + favorite)
 
 

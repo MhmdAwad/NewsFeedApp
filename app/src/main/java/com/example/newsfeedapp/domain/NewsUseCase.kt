@@ -9,8 +9,8 @@ import javax.inject.Inject
 class NewsUseCase @Inject constructor(private val repository: NewsRepository) {
 
 
-     suspend fun getNewsUseCase(): List<Article> {
-        return repository.getNewsSources()
+     suspend fun getNewsUseCase(isDataUpdated:Boolean): List<Article> {
+        return repository.getNewsSources(isDataUpdated)
     }
 
 

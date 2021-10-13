@@ -22,7 +22,6 @@ import com.example.newsfeedapp.ui.NewsViewModel
 import com.example.newsfeedapp.ui.adapter.NewsAdapter
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_wish_list.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,7 +40,7 @@ class WishListFragment : Fragment(R.layout.fragment_wish_list), NewsAdapter.Inte
         super.onViewCreated(view, savedInstanceState)
         favList = mutableListOf()
         setHasOptionsMenu(true)
-        viewModel.getHomeNews()
+        viewModel.getHomeNews(false)
         setupRecyclerView()
         observeToFavLiveData()
         swipeToDelete(view)
@@ -72,7 +71,7 @@ class WishListFragment : Fragment(R.layout.fragment_wish_list), NewsAdapter.Inte
                     viewModel.updateFavorite(0, article.url)
                     favList.remove(article)
 
-                    viewModel.getHomeNews()
+                    viewModel.getHomeNews(false)
 
                 }
 
@@ -81,7 +80,7 @@ class WishListFragment : Fragment(R.layout.fragment_wish_list), NewsAdapter.Inte
 
                         lifecycleScope.launch(Dispatchers.IO) {
                             viewModel.updateFavorite(1, article.url)
-                            viewModel.getHomeNews()
+                            viewModel.getHomeNews(false)
                         }
 
                     }
@@ -101,12 +100,12 @@ class WishListFragment : Fragment(R.layout.fragment_wish_list), NewsAdapter.Inte
 
             when (articles) {
                 is Resource.Error -> {
-                    ProgressBar.gone()
+                    ProgressBar_wishList.gone()
                 }
 
-                is Resource.Loading -> ProgressBar.show()
+                is Resource.Loading -> ProgressBar_wishList.show()
                 is Resource.Success -> {
-                    ProgressBar.gone()
+                    ProgressBar_wishList.gone()
                     val filteredList = articles.data?.filter {
                         it.isFav == 1
                     };
@@ -114,10 +113,6 @@ class WishListFragment : Fragment(R.layout.fragment_wish_list), NewsAdapter.Inte
                     filteredList?.let { favList.addAll(it?.reversed()) }
                 }
             }
-
-
-
-
 
 
         }
@@ -143,10 +138,10 @@ class WishListFragment : Fragment(R.layout.fragment_wish_list), NewsAdapter.Inte
             R.id.action_deleteAll -> {
 
                 if (favList.isNotEmpty())
-                    showDialog(getString(R.string.deleteAll),
-                        getString(R.string.yes)
-                        ,
-                        DialogInterface.OnClickListener { dialog, which ->
+                    showDialog(
+                        getString(R.string.deleteAll),
+                        getString(R.string.yes),
+                        { dialog, which ->
 
                             lifecycleScope.launch(Dispatchers.IO) {
                                 Log.e("TAG", "delete all")
@@ -156,14 +151,14 @@ class WishListFragment : Fragment(R.layout.fragment_wish_list), NewsAdapter.Inte
                                 for (i in 0..size) {
                                     viewModel.updateFavorite(0, favList[i].url)
                                 }
-                                viewModel.getHomeNews()
+                                viewModel.getHomeNews(false)
 
                             }
 
 
                         },
                         getString(R.string.no),
-                        DialogInterface.OnClickListener { dialog, which ->
+                        { dialog, which ->
                             dialog.dismiss()
                         },
                         true

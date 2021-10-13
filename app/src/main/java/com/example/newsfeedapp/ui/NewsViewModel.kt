@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class NewsViewModel  @Inject constructor (private val newsUseCase: NewsUseCase) : ViewModel() {
+class NewsViewModel   @Inject constructor (private val newsUseCase: NewsUseCase) : ViewModel() {
 
     private var articleNews = MutableLiveData<Resource<Article>>()
      var error = MutableLiveData<Boolean>()
@@ -21,15 +21,14 @@ class NewsViewModel  @Inject constructor (private val newsUseCase: NewsUseCase) 
 
 
 
-     fun getHomeNews() {
+     fun getHomeNews(isDataUpdated:Boolean) {
         articleNews.postValue(Resource.Loading())
 
         viewModelScope.launch(Dispatchers.IO) {
-            val result = newsUseCase.getNewsUseCase()
+            val result = newsUseCase.getNewsUseCase(isDataUpdated)
 
             articleNews.postValue(Resource.Success(result))
             if(result.isNullOrEmpty()){
-                //articleNews.postValue(Resource.Error(msg="No data saved "))
                 error.postValue(true)
             }
         }
@@ -38,7 +37,11 @@ class NewsViewModel  @Inject constructor (private val newsUseCase: NewsUseCase) 
     fun getNews() = articleNews as LiveData<Resource<Article>>
 
 
-    suspend fun updateFavorite(isFv:Int,url:String)=newsUseCase.updateFavoriteUseCase(isFv,url)
+     fun updateFavorite(isFv:Int,url:String){
+         viewModelScope.launch(Dispatchers.IO){
+             newsUseCase.updateFavoriteUseCase(isFv,url)
+         }
+     }
 
 
 
