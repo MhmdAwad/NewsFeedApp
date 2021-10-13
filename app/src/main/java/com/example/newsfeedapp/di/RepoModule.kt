@@ -3,9 +3,7 @@ package  com.example.newsfeedapp.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.newsfeedapp.common.NetworkAwareHandler
-import com.example.newsfeedapp.common.NetworkHandlerImpl
-import com.example.newsfeedapp.common.SharedPrefHelper
+import com.example.newsfeedapp.common.*
 import com.example.newsfeedapp.data.*
 import com.example.newsfeedapp.data.sources.homeCahedData.*
 import com.example.newsfeedapp.data.sources.remoteApi.*
@@ -25,21 +23,21 @@ object RepoModule {
 
     @Singleton
     @Provides
-    fun provideSharedPreference(@ApplicationContext context: Context): SharedPreferences {
-        return context.getSharedPreferences("preferences_name", Context.MODE_PRIVATE)
-    }
+    fun provideSharedPreference(@ApplicationContext context: Context) =
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE) as SharedPreferences
+
 
     @Singleton
     @Provides
-    fun provideSharedPreferenceEditor(sharedPreferences: SharedPreferences): SharedPreferences.Editor {
-        return sharedPreferences.edit()
-    }
+    fun provideSharedPreferenceEditor(sharedPreferences: SharedPreferences)=
+         sharedPreferences.edit() as SharedPreferences.Editor
+
 
     @Singleton
     @Provides
-    fun sharedPrefHelper(sharedPreferences: SharedPreferences,editor: SharedPreferences.Editor): SharedPrefHelper {
-        return SharedPrefHelper(sharedPreferences,editor)
-    }
+    fun sharedPrefHelper(sharedPreferences: SharedPreferences,editor: SharedPreferences.Editor)=
+        SharedPrefHelperImpl(sharedPreferences,editor)  as SharedPrefHelper
+
 
 
     @Provides
@@ -72,32 +70,6 @@ object RepoModule {
 
 
 
-
-
-
-
 }
 
 
-/*
-
-val repoModule = module {
-
-    // Provide NewsRepository
-    single { NewsRepository(get() , get() , get() ) }
-
-    factory  <IOfflineDataSource>{ OfflineSourcesRoomBased(get()) }
-
-    factory <IOnlineDataSource> { OnlineSourcesBasedRetroFit(get())  }
-
-    single <INetworkAwareHandler> { NetworkHandler(get())  }
-
-    single { FavRepo(get()) }
-
-
-    factory <IApiHelper> { ApiHelperImpl(get())  }
-
-
-}
-
- */

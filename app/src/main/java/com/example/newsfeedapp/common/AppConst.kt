@@ -6,4 +6,6 @@ const val END_POINT="v1/articles"
 const val SOURCE="source"
 
 
-const val KEY_CURRENT_DAY:String = "day"
+const val KEY_CURRENT_DAY = "day"
+
+const val PREFS_NAME  ="preferences_name"

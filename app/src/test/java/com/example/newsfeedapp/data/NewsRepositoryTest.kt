@@ -1,6 +1,7 @@
 package com.example.newsfeedapp.data
 
 import com.example.newsfeedapp.common.NetworkAwareHandler
+import com.example.newsfeedapp.common.SharedPrefHelper
 import com.example.newsfeedapp.data.model.Article
 import com.example.newsfeedapp.data.sources.homeCahedData.OfflineDataSource
 import com.example.newsfeedapp.data.sources.remoteApi.OnlineDataSource
@@ -8,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import org.hamcrest.core.Is
 import org.junit.Assert.assertThat
 import org.junit.Test
+
 
 class NewsRepositoryTest {
 
@@ -33,8 +35,10 @@ val fakeList= mutableListOf<Article>().apply {
 
 
 
+
     @Test
     fun getNewsSources_andInsertit_inRoom(){
+
         runBlocking {
             val offlineDataSource = object : OfflineDataSource {
                 override fun getArticles(): List<Article> {
@@ -43,9 +47,12 @@ val fakeList= mutableListOf<Article>().apply {
             }
             val newsRepository = NewsRepositoryImpl(offlineDataSource, object : OnlineDataSource {},
 
+                object : SharedPrefHelper {}
+                ,
+
                 object : NetworkAwareHandler {})
 
-            val result = newsRepository.getNewsSources()
+            val result = newsRepository.getNewsSources(true)
             val exepected = listOf(
                 Article(
                     author = "one",
@@ -78,11 +85,11 @@ val fakeList= mutableListOf<Article>().apply {
                     return fakeList
                 }
             }
-            val newsRepository = NewsRepositoryImpl(offlineDataSource, object : OnlineDataSource {},
+            val newsRepository = NewsRepositoryImpl(offlineDataSource, object : OnlineDataSource {},object : SharedPrefHelper {},
 
                 object : NetworkAwareHandler {})
 
-            val result = newsRepository.getNewsSources()
+            val result = newsRepository.getNewsSources(true)
             val exepected = listOf(
                 Article(
                     author = "one",
@@ -117,12 +124,12 @@ val fakeList= mutableListOf<Article>().apply {
             }
 
             val newsRepository = NewsRepositoryImpl(offlineDataSource,
-                object : OnlineDataSource {},
+                object : OnlineDataSource {},object : SharedPrefHelper {},
                 object : NetworkAwareHandler {
                     override fun isOnline(): Boolean = false
                 })
 
-            val result = newsRepository.getNewsSources()
+            val result = newsRepository.getNewsSources(true)
             val exepected = listOf(
                 Article(
                     author = "one",
@@ -159,10 +166,10 @@ val fakeList= mutableListOf<Article>().apply {
             }
 
             val newsRepository = NewsRepositoryImpl(object : OfflineDataSource {},
-                onlineDataSource,
+                onlineDataSource,object : SharedPrefHelper {},
                 object : NetworkAwareHandler {})
 
-            newsRepository.getNewsSources()
+            newsRepository.getNewsSources(true)
 
             assertThat(isGetSourcesInvoked, Is.`is`(true))
         }
@@ -189,10 +196,10 @@ val fakeList= mutableListOf<Article>().apply {
 
             val newsRepository = NewsRepositoryImpl(
                 offlineDataSource,
-                onlineDataSource,
+                onlineDataSource,object : SharedPrefHelper {},
                 object : NetworkAwareHandler {})
 
-            newsRepository.getNewsSources()
+            newsRepository.getNewsSources(true)
 
             assertThat(isCachedInvoked, Is.`is`(true))
         }
@@ -211,10 +218,10 @@ val fakeList= mutableListOf<Article>().apply {
             }
 
             val newsRepository = NewsRepositoryImpl(object : OfflineDataSource {},
-                onlineDataSource,
+                onlineDataSource,object : SharedPrefHelper {},
                 object : NetworkAwareHandler {})
 
-            newsRepository.getNewsSources()
+            newsRepository.getNewsSources(true)
 
             assertThat(isGetSourcesInvoked, Is.`is`(true))
         }
